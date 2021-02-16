@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav>
+      <button id="today">Today</button>
+      <button id="prevDays">Previous Days</button>
+    </nav>
+    <div class="container" id="top-site-panel">
+      <h1 class="title">Top Sites Today</h1>
+      <table id="sites">
+        <tr>
+          <th>You haven't visited any sites yet</th>
+        </tr>
+      </table>
+    </div>
+
+    <div class="hide container" id="previous-days-panel">
+      <h1 class="title">Previous Days</h1>
+      <table id="days">
+        <tr>
+          <th>Today is your first day using this extension</th>
+        </tr>
+      </table>
+    </div>
+
+    <div class="hide container" id="previous-stats-panel">
+      <h1 class="title" id="previous-stats-title">Do this in JS</h1>
+      <table id="previous-stats-table"> </table>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>

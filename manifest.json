@@ -1,0 +1,17 @@
+{
+  "description": "Keeps track of the website you visit.",
+  "manifest_version": 2,
+  "name": "Site Tracker",
+  "version": "1.0",
+  "icons": {
+    "48": "icons/icon.svg"
+  },
+  "permissions": ["webNavigation", "storage"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "browser_action": {
+    "default_icon": "icons/icon.svg",
+    "default_popup": "popup/index.html"
+  }
+}
