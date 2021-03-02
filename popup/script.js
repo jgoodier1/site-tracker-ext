@@ -88,8 +88,15 @@ function unhideAndHide(toUnhide, toHide) {
   toHide.forEach(element => document.getElementById(element).classList.add('hide'));
 }
 
+function openOptions() {
+  const url = browser.runtime.getURL('options/index.html');
+  browser.tabs.create({ url });
+}
+
 addEnterHandler(document.getElementById('prevDays'), previousDaysList);
 
 addEnterHandler(document.getElementById('today'), topSites);
+
+addEnterHandler(document.getElementById('options'), openOptions);
 
 topSites();
