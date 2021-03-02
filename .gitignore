@@ -2,3 +2,4 @@
 
 .web-extension-id
 .DS_store
+node_modules

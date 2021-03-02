@@ -1,0 +1,23 @@
+{
+  "name": "site-tracker-ext",
+  "version": "1.0.0",
+  "description": "A Firefox extension that keeps track of what websites you've visited.",
+  "main": "background.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jgoodier1/site-tracker-ext.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jgoodier1/site-tracker-ext/issues"
+  },
+  "homepage": "https://github.com/jgoodier1/site-tracker-ext#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^7.21.0"
+  }
+}
