@@ -1,5 +1,15 @@
 let lastHostname;
 
+const tabURLs = [];
+
+function initiateTabs(tabId) {
+  if (tabURLs[tabId]) {
+    return;
+  } else {
+    tabURLs[tabId] = 'about:blank';
+  }
+}
+
 browser.storage.local.get('results').then(results => {
   if (results.results) results = results.results;
 
@@ -61,31 +71,45 @@ function addToResults(url, results) {
   browser.storage.local.set({ results: results });
 }
 
-browser.storage.local.get('blockedSites').then(results => {
-  browser.storage.local.get('redirectSite').then(redirectResults => {
-    const blockedSites = results.blockedSites;
+function blockSite(tabId, changeInfo) {
+  browser.storage.local.get('blockedSites').then(results => {
+    browser.storage.local.get('redirectSite').then(redirectResults => {
+      const blockedSites = results.blockedSites;
+      const sites = blockedSites.map(site => {
+        if (site.slice(0, 4) !== 'http') site = `https://www.${site}/`;
+        if (!site.endsWith('/')) site = `${site}/`;
+        return site;
+      });
 
-    const sites = blockedSites.map(site => {
-      return `*://*.${site}/*`;
-    });
-    console.log(sites);
-
-    function redirect(requestDetails) {
-      let redirectSite = redirectResults.redirectSite;
-
-      // this still isn't the best way to do it
-      if (redirectSite === undefined) redirectSite = 'https://developer.mozilla.org';
-      else if (redirectSite.slice(0, 4) !== 'http') {
-        redirectSite = `https://www.${redirectSite}/`;
+      console.log(sites);
+      if (changeInfo.url) {
+        tabURLs[tabId] = changeInfo.url;
       }
-      console.log('Redirecting ' + requestDetails.url);
-      return {
-        redirectUrl: redirectSite
-      };
-    }
 
-    browser.webRequest.onBeforeRequest.addListener(redirect, { urls: sites }, [
-      'blocking'
-    ]);
+      function redirect() {
+        let redirectSite = redirectResults.redirectSite;
+
+        const defaultUrl = browser.runtime.getURL('blocked/index.html');
+        // this still isn't the best way to do it
+        if (redirectSite === undefined) redirectSite = defaultUrl;
+        else if (redirectSite.slice(0, 4) !== 'http' && redirectSite !== 'about:blank') {
+          redirectSite = `https://www.${redirectSite}/`;
+        }
+        browser.tabs.update(tabId, { url: redirectSite });
+      }
+
+      if (sites.includes(tabURLs[tabId])) {
+        redirect();
+      }
+    });
   });
-});
+}
+
+function handleBeforeNavigation(details) {
+  initiateTabs(details.tabId); // not sure if i need this, its just what leechblock does
+
+  tabURLs[details.tabId] = details.url;
+}
+
+browser.tabs.onUpdated.addListener(blockSite);
+browser.webNavigation.onBeforeNavigate.addListener(handleBeforeNavigation);
