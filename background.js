@@ -62,34 +62,30 @@ function addToResults(url, results) {
 }
 
 browser.storage.local.get('blockedSites').then(results => {
-  const blockedSites = results.blockedSites;
+  browser.storage.local.get('redirectSite').then(redirectResults => {
+    const blockedSites = results.blockedSites;
 
-  // this needs to work for other schemes
-  const sitesArray = [];
-  blockedSites.forEach(site => {
-    sitesArray.push(`*://*.${site}/*`);
-    // sitesArray.push(`*://${site}/*`);
-    // sitesArray.push(`${site}/*`);
+    const sites = blockedSites.map(site => {
+      return `*://*.${site}/*`;
+    });
+    console.log(sites);
+
+    function redirect(requestDetails) {
+      let redirectSite = redirectResults.redirectSite;
+
+      // this still isn't the best way to do it
+      if (redirectSite === undefined) redirectSite = 'https://developer.mozilla.org';
+      else if (redirectSite.slice(0, 4) !== 'http') {
+        redirectSite = `https://www.${redirectSite}/`;
+      }
+      console.log('Redirecting ' + requestDetails.url);
+      return {
+        redirectUrl: redirectSite
+      };
+    }
+
+    browser.webRequest.onBeforeRequest.addListener(redirect, { urls: sites }, [
+      'blocking'
+    ]);
   });
-  // const formattedSites = blockedSites.map(site => {
-  //   return `*://*.${site}/*`;
-  // });
-
-  // have option to close the tab
-  function redirect(requestDetails) {
-    // browser.storage.local.get('redirectSite').then(() => {
-    // let redirectSite = results.redirectSite;
-    // if (redirectSite === undefined) redirectSite = 'https://developer.mozilla.org';
-    const redirectSite = 'https://developer.mozilla.org';
-    // console.log(redirectSite);
-    console.log('Redirecting ' + requestDetails.url);
-    return {
-      redirectUrl: redirectSite
-    };
-    // });
-  }
-
-  browser.webRequest.onBeforeRequest.addListener(redirect, { urls: sitesArray }, [
-    'blocking'
-  ]);
 });
