@@ -62,11 +62,11 @@ async function showBlockedSites() {
 }
 
 async function removeBlockedSite(e) {
-  const site = e.target.parentNode.textContent.slice(0, -1);
-  console.log(site);
+  const blockedSite = e.target.parentNode.textContent.slice(0, -1);
+  // console.log(site);
   const blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
-  blockedSites.pop(site);
-  browser.storage.local.set({ blockedSites });
+  const filterSites = blockedSites.filter(site => site !== blockedSite);
+  browser.storage.local.set({ blockedSites: filterSites });
   const list = document.querySelector('#blocked-list');
   list.removeChild(e.target.parentNode);
 }
