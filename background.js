@@ -72,7 +72,6 @@ function blockSite(tabId, changeInfo) {
       if (changeInfo.url) {
         tabURLs[tabId] = changeInfo.url;
       }
-
       function redirect() {
         let redirectSite = redirectResults.redirectSite;
 
@@ -85,7 +84,7 @@ function blockSite(tabId, changeInfo) {
         browser.tabs.update(tabId, { url: redirectSite });
       }
       blockedSites.forEach(site => {
-        const found = tabURLs[tabId].match(site);
+        const found = tabURLs[tabId].match(site.regex);
         if (found !== null) redirect();
       });
     });

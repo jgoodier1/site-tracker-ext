@@ -2,18 +2,23 @@ async function blockSite(e) {
   e.preventDefault();
   const input = document.querySelector('#block-site');
   const radioButton = document.querySelector('input[name="block-options"]:checked').value;
-  // console.log(radioButton);
   let blockedRE;
   if (radioButton === 'entire-site') {
     blockedRE = new RegExp(`[\\w-]+:/*[\\w-.]*${input.value}[^?#]*[?]*[^#]*`);
   } else if (radioButton === 'specific-part') {
     blockedRE = new RegExp(`[\\w-]+:/*[\\w-.]*${input.value}[/]*`);
   } else return;
-  // console.log(blockedRE);
+
   let blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
   if (blockedSites === undefined) blockedSites = [];
-  if (blockedSites.includes(blockedRE)) return;
-  blockedSites.push(blockedRE);
+  // how to do this check??
+  const blockObject = {
+    userString: input.value,
+    regex: blockedRE,
+    radioOption: radioButton
+  };
+  if (blockedSites.includes(blockObject)) return;
+  blockedSites.push(blockObject);
   browser.storage.local.set({
     blockedSites
   });
@@ -63,7 +68,7 @@ async function showBlockedSites() {
 
   blockedSites.forEach(site => {
     const listItem = document.createElement('li');
-    listItem.textContent = site;
+    listItem.textContent = site.userString;
     const xButton = document.createElement('button');
     xButton.textContent = 'X';
     xButton.addEventListener('click', removeBlockedSite);
@@ -75,7 +80,10 @@ async function showBlockedSites() {
 async function removeBlockedSite(e) {
   const blockedSite = e.target.parentNode.textContent.slice(0, -1);
   const blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
-  const filterSites = blockedSites.filter(site => site.toString() !== blockedSite);
+  blockedSites.forEach(site => {
+    console.log(site.userString, blockedSite);
+  });
+  const filterSites = blockedSites.filter(site => site.userString !== blockedSite);
   browser.storage.local.set({ blockedSites: filterSites });
   const list = document.querySelector('#blocked-list');
   list.removeChild(e.target.parentNode);
