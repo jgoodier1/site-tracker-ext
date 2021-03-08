@@ -1,13 +1,24 @@
 async function blockSite(e) {
   e.preventDefault();
   const input = document.querySelector('#block-site');
+  const radioButton = document.querySelector('input[name="block-options"]:checked').value;
+  // console.log(radioButton);
+  let blockedRE;
+  if (radioButton === 'entire-site') {
+    blockedRE = new RegExp(`[\\w-]+:/*[\\w-.]*${input.value}[^?#]*[?]*[^#]*`);
+  } else if (radioButton === 'specific-part') {
+    blockedRE = new RegExp(`[\\w-]+:/*[\\w-.]*${input.value}[/]*`);
+  } else return;
+  // console.log(blockedRE);
   let blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
   if (blockedSites === undefined) blockedSites = [];
-  if (blockedSites.includes(input.value)) return;
-  blockedSites.push(input.value);
+  if (blockedSites.includes(blockedRE)) return;
+  blockedSites.push(blockedRE);
   browser.storage.local.set({
     blockedSites
   });
+
+  // this should be it's own function
   const blockedList = document.querySelector('#blocked-list');
   // this doesn't work with firstChild
   if (blockedList.firstChild) {
@@ -63,9 +74,8 @@ async function showBlockedSites() {
 
 async function removeBlockedSite(e) {
   const blockedSite = e.target.parentNode.textContent.slice(0, -1);
-  // console.log(site);
   const blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
-  const filterSites = blockedSites.filter(site => site !== blockedSite);
+  const filterSites = blockedSites.filter(site => site.toString() !== blockedSite);
   browser.storage.local.set({ blockedSites: filterSites });
   const list = document.querySelector('#blocked-list');
   list.removeChild(e.target.parentNode);

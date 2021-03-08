@@ -4,28 +4,52 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="../icons/icon.svg" />
+    <title>Site Tracker Options</title>
   </head>
   <body>
-    <h1>Options</h1>
+    <main>
+      <div class="container">
+        <h1>Options</h1>
 
-    <form id="block-site-form">
-      <label for="block-site">Block site:<input type="text" id="block-site" /></label>
-      <button type="submit">Save</button>
-    </form>
+        <form id="block-site-form">
+          <label for="block-site">Block site:<input type="text" id="block-site" /></label>
+          <div>
+            <input
+              type="radio"
+              name="block-options"
+              id="entire-site"
+              value="entire-site"
+              checked
+            />
+            <label for="entire-site">Block the entire site</label>
+          </div>
+          <div>
+            <input
+              type="radio"
+              name="block-options"
+              id="specific-part"
+              value="specific-part"
+            />
+            <label for="specific-part">Block the specific pattern</label>
+          </div>
+          <button type="submit">Save</button>
+        </form>
 
-    <form id="redirect-page-form">
-      <label for="redirect-page">
-        Redirect to:<input type="text" id="redirect-page" />
-      </label>
-      <button type="submit">Save</button>
-    </form>
+        <form id="redirect-page-form">
+          <label for="redirect-page">
+            Redirect to:<input type="text" id="redirect-page" />
+          </label>
+          <button type="submit">Save</button>
+        </form>
 
-    <!-- list of blocked pages with option to remove them -->
-    <h2>Currently Blocking:</h2>
-    <ul id="blocked-list">
-      <li>nothing</li>
-    </ul>
+        <h2>Currently Blocking:</h2>
+        <ul id="blocked-list">
+          <li>nothing</li>
+        </ul>
+      </div>
+    </main>
     <script src="script.js"></script>
   </body>
 </html>

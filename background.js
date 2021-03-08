@@ -2,14 +2,6 @@ let lastHostname;
 
 const tabURLs = [];
 
-function initiateTabs(tabId) {
-  if (tabURLs[tabId]) {
-    return;
-  } else {
-    tabURLs[tabId] = 'about:blank';
-  }
-}
-
 browser.storage.local.get('results').then(results => {
   if (results.results) results = results.results;
 
@@ -75,13 +67,8 @@ function blockSite(tabId, changeInfo) {
   browser.storage.local.get('blockedSites').then(results => {
     browser.storage.local.get('redirectSite').then(redirectResults => {
       const blockedSites = results.blockedSites;
-      const sites = blockedSites.map(site => {
-        if (site.slice(0, 4) !== 'http') site = `https://www.${site}/`;
-        if (!site.endsWith('/')) site = `${site}/`;
-        return site;
-      });
+      if (blockedSites === undefined) return;
 
-      console.log(sites);
       if (changeInfo.url) {
         tabURLs[tabId] = changeInfo.url;
       }
@@ -97,19 +84,12 @@ function blockSite(tabId, changeInfo) {
         }
         browser.tabs.update(tabId, { url: redirectSite });
       }
-
-      if (sites.includes(tabURLs[tabId])) {
-        redirect();
-      }
+      blockedSites.forEach(site => {
+        const found = tabURLs[tabId].match(site);
+        if (found !== null) redirect();
+      });
     });
   });
 }
 
-function handleBeforeNavigation(details) {
-  initiateTabs(details.tabId); // not sure if i need this, its just what leechblock does
-
-  tabURLs[details.tabId] = details.url;
-}
-
 browser.tabs.onUpdated.addListener(blockSite);
-browser.webNavigation.onBeforeNavigate.addListener(handleBeforeNavigation);
