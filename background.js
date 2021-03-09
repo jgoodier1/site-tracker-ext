@@ -70,13 +70,14 @@ function initiateTab(tabId) {
 
 function blockSite(details) {
   initiateTab(details.tabId);
-  console.log(details);
+
   browser.storage.local.get('blockedSites').then(results => {
     browser.storage.local.get('redirectSite').then(redirectResults => {
       const blockedSites = results.blockedSites;
       if (blockedSites === undefined) return;
 
       tabURLs[details.tabId] = details.url;
+
       function redirect() {
         let redirectSite = redirectResults.redirectSite;
 
@@ -89,7 +90,6 @@ function blockSite(details) {
       }
       blockedSites.forEach(site => {
         const found = tabURLs[details.tabId].match(site.regex);
-        console.log(tabURLs[details.tabId], site.regex, found);
         if (found !== null) redirect();
       });
     });
