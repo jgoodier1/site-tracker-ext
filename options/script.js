@@ -4,9 +4,9 @@ async function blockSite(e) {
   const radioButton = document.querySelector('input[name="block-options"]:checked').value;
   let blockedRE;
   if (radioButton === 'entire-site') {
-    blockedRE = new RegExp(`[\\w-]+:/*[\\w-.]*${input.value}[^?#]*[?]*[^#]*`);
+    blockedRE = new RegExp(input.value, 'i');
   } else if (radioButton === 'specific-part') {
-    blockedRE = new RegExp(`^[\\w-]+:/*[\\w-.]*${input.value}[/]*$`);
+    blockedRE = new RegExp(`^[\\w-]+:/*[\\w-.]*${input.value}[/]*$`, 'i');
   } else return;
 
   let blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
@@ -96,3 +96,8 @@ document.addEventListener('DOMContentLoaded', showBlockedSites);
 
 document.querySelector('#block-site-form').addEventListener('submit', blockSite);
 document.querySelector('#redirect-page-form').addEventListener('submit', redirectSite);
+
+document.querySelector('#reset-redirect').addEventListener('click', function () {
+  browser.storage.local.remove('redirectSite');
+  document.querySelector('#redirect-page').value = '';
+});
