@@ -6,13 +6,7 @@
   "icons": {
     "48": "icons/icon.svg"
   },
-  "permissions": [
-    "webNavigation",
-    "storage",
-    "webRequest",
-    "webRequestBlocking",
-    "<all_urls>"
-  ],
+  "permissions": ["webNavigation", "storage", "webRequest", "<all_urls>"],
   "background": {
     "scripts": ["background.js"]
   },
