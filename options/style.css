@@ -13,14 +13,67 @@ main {
   grid-template-columns: 1fr min(65ch, 100%) 1fr;
 }
 
+.hide {
+  display: none;
+}
+
 .container {
   grid-column: 2/3;
 }
 
-#block-site-form {
+#block-site-form,
+#redirect-page-form {
   display: grid;
+  grid-gap: 10px;
+  padding: 1rem 0;
 }
 
-#block-site-form button {
+#redirect-page-form {
+  grid-template-areas: 'label label' 'save reset';
+}
+
+#redirect-page-form .text-label {
+  grid-area: label;
+}
+
+input[type='text'] {
+  width: min(45ch, 100%);
+  font: inherit;
+  font-size: 14px;
+}
+
+.text-label {
+  font-size: 18px;
+  display: grid;
+  grid-template-columns: 14ch 1fr;
+}
+
+.text-label {
+  font-size: 16px;
+}
+
+.option-button {
+  background: none;
+  border: 1px solid black;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0.25em 1em;
   width: max-content;
+}
+
+.remove-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ff2f2f;
+}
+
+#blocked-list {
+  width: 100%;
+  background: #ededed;
+  text-align: left;
 }

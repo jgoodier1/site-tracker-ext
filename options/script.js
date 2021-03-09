@@ -23,23 +23,14 @@ async function blockSite(e) {
     blockedSites
   });
 
-  // this should be it's own function
+  // check if the 'not blocking anything' p exists
+  const emptyListP = document.querySelector('#empty-list-p');
+  if (emptyListP) emptyListP.parentNode.removeChild(emptyListP);
+
   const blockedList = document.querySelector('#blocked-list');
-  // this doesn't work with firstChild
-  if (blockedList.firstChild) {
-    if (blockedList.children[0].textContent === 'nothing') {
-      blockedList.removeChild(blockedList.children[0]);
-    }
-  }
-  const listItem = document.createElement('li');
-  listItem.textContent = `${input.value} - Blocking the ${
-    radioButton === 'entire-site' ? 'entire site' : 'specific path'
-  }`;
-  const xButton = document.createElement('button');
-  xButton.textContent = 'X';
-  xButton.addEventListener('click', removeBlockedSite);
-  listItem.appendChild(xButton);
-  blockedList.appendChild(listItem);
+  blockedList.classList.remove('hide');
+  addToTable(input.value, radioButton);
+
   input.value = '';
 }
 
@@ -65,30 +56,51 @@ function showRedirectSite() {
 async function showBlockedSites() {
   const blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
   if (blockedSites === undefined || blockedSites.length === 0) return;
+
+  // check if the 'not blocking anything' p exists
+  const emptyListP = document.querySelector('#empty-list-p');
+  if (emptyListP) emptyListP.parentNode.removeChild(emptyListP);
+
   const list = document.querySelector('#blocked-list');
-  while (list.firstChild) list.removeChild(list.firstChild);
+  list.classList.remove('hide');
 
   blockedSites.forEach(site => {
-    const listItem = document.createElement('li');
-    listItem.textContent = `${site.userString} - Blocking the ${
-      site.radioOption === 'entire-site' ? 'entire site' : 'specific path'
-    }`;
-    const xButton = document.createElement('button');
-    xButton.textContent = 'X';
-    xButton.addEventListener('click', removeBlockedSite);
-    listItem.appendChild(xButton);
-    list.appendChild(listItem);
+    addToTable(site.userString, site.radioOption);
   });
 }
 
+function addToTable(url, specificity) {
+  const tableBody = document.querySelector('#block-list-tbody');
+  const tableRow = document.createElement('tr');
+  tableRow.id = url;
+  const siteCell = document.createElement('td');
+  siteCell.textContent = url;
+  tableRow.appendChild(siteCell);
+
+  const specificityCell = document.createElement('td');
+  specificityCell.textContent =
+    specificity === 'entire-site' ? 'entire site' : 'specific path';
+  tableRow.appendChild(specificityCell);
+
+  const removeCell = document.createElement('td');
+  const xButton = document.createElement('button');
+  xButton.textContent = 'X';
+  xButton.classList.add('remove-button');
+  xButton.addEventListener('click', removeBlockedSite);
+  removeCell.appendChild(xButton);
+  tableRow.appendChild(removeCell);
+  tableBody.appendChild(tableRow);
+}
+
 async function removeBlockedSite(e) {
-  const blockedSite = e.target.parentNode.textContent.split('-')[0].trim();
+  const blockedSite = e.target.parentNode.parentNode.id;
   const blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
   blockedSites.forEach(site => console.log(site.userString, blockedSite));
   const filterSites = blockedSites.filter(site => site.userString !== blockedSite);
   browser.storage.local.set({ blockedSites: filterSites });
-  const list = document.querySelector('#blocked-list');
-  list.removeChild(e.target.parentNode);
+
+  // this is really stupid
+  e.target.parentNode.parentNode.parentNode.removeChild(e.target.parentNode.parentNode);
 }
 
 document.addEventListener('DOMContentLoaded', showRedirectSite);

@@ -14,7 +14,14 @@
         <h1>Options</h1>
 
         <form id="block-site-form">
-          <label for="block-site">Block site:<input type="text" id="block-site" /></label>
+          <label for="block-site" class="text-label">
+            Block a Site:
+            <input
+              type="text"
+              id="block-site"
+              placeholder="subsite.example.com/path?search=whatever"
+            />
+          </label>
           <div>
             <input
               type="radio"
@@ -23,7 +30,7 @@
               value="entire-site"
               checked
             />
-            <label for="entire-site">Block the entire site</label>
+            <label for="entire-site" class="radio-label">Block the entire site</label>
           </div>
           <div>
             <input
@@ -32,23 +39,39 @@
               id="specific-part"
               value="specific-part"
             />
-            <label for="specific-part">Block the specific pattern</label>
+            <label for="specific-part">Block only this page</label>
           </div>
-          <button type="submit">Save</button>
+          <button type="submit" class="option-button">Block</button>
         </form>
 
         <form id="redirect-page-form">
-          <label for="redirect-page">
-            Redirect to:<input type="text" id="redirect-page" />
+          <label for="redirect-page" class="text-label">
+            Redirect to:<input
+              type="text"
+              id="redirect-page"
+              placeholder="subsite.example.com/path?search=whatever"
+            />
           </label>
-          <button type="submit">Save</button>
-          <button type="button" id="reset-redirect">Reset to Default</button>
+          <button type="submit" class="option-button">Save</button>
+          <button type="button" id="reset-redirect" class="option-button">
+            Restore to Default
+          </button>
         </form>
 
-        <h2>Currently Blocking:</h2>
-        <ul id="blocked-list">
-          <li>nothing</li>
-        </ul>
+        <div>
+          <h2>Currently Blocking:</h2>
+          <p id="empty-list-p">You are currently not blocking anything.</p>
+          <table id="blocked-list" class="hide">
+            <thead>
+              <tr>
+                <th>Site</th>
+                <th>Specificity</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody id="block-list-tbody"></tbody>
+          </table>
+        </div>
       </div>
     </main>
     <script src="script.js"></script>
