@@ -68,16 +68,15 @@ function initiateTab(tabId) {
   else tabURLs[tabId] = 'about:blank';
 }
 
-function blockSite(tabId, changeInfo) {
-  initiateTab(tabId);
+function blockSite(details) {
+  initiateTab(details.tabId);
+  console.log(details);
   browser.storage.local.get('blockedSites').then(results => {
     browser.storage.local.get('redirectSite').then(redirectResults => {
       const blockedSites = results.blockedSites;
       if (blockedSites === undefined) return;
 
-      if (changeInfo.url) {
-        tabURLs[tabId] = changeInfo.url;
-      }
+      tabURLs[details.tabId] = details.url;
       function redirect() {
         let redirectSite = redirectResults.redirectSite;
 
@@ -86,14 +85,18 @@ function blockSite(tabId, changeInfo) {
         else if (redirectSite.slice(0, 4) !== 'http' && redirectSite !== 'about:blank') {
           redirectSite = `https://www.${redirectSite}/`;
         }
-        browser.tabs.update(tabId, { url: redirectSite, loadReplace: true });
+        browser.tabs.update(details.tabId, { url: redirectSite, loadReplace: true });
       }
       blockedSites.forEach(site => {
-        const found = tabURLs[tabId].match(site.regex);
+        const found = tabURLs[details.tabId].match(site.regex);
+        console.log(tabURLs[details.tabId], site.regex, found);
         if (found !== null) redirect();
       });
     });
   });
 }
 
-browser.tabs.onUpdated.addListener(blockSite, { properties: ['status'] });
+browser.webRequest.onBeforeRequest.addListener(blockSite, {
+  urls: ['<all_urls>'],
+  types: ['main_frame']
+});
