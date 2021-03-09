@@ -6,17 +6,17 @@ async function blockSite(e) {
   if (radioButton === 'entire-site') {
     blockedRE = new RegExp(`[\\w-]+:/*[\\w-.]*${input.value}[^?#]*[?]*[^#]*`);
   } else if (radioButton === 'specific-part') {
-    blockedRE = new RegExp(`[\\w-]+:/*[\\w-.]*${input.value}[/]*`);
+    blockedRE = new RegExp(`^[\\w-]+:/*[\\w-.]*${input.value}[/]*$`);
   } else return;
 
   let blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
   if (blockedSites === undefined) blockedSites = [];
-  // how to do this check??
   const blockObject = {
     userString: input.value,
     regex: blockedRE,
     radioOption: radioButton
   };
+  // how to do this check??
   if (blockedSites.includes(blockObject)) return;
   blockedSites.push(blockObject);
   browser.storage.local.set({
@@ -32,7 +32,9 @@ async function blockSite(e) {
     }
   }
   const listItem = document.createElement('li');
-  listItem.textContent = input.value;
+  listItem.textContent = `${input.value} - Blocking the ${
+    radioButton === 'entire-site' ? 'entire site' : 'specific path'
+  }`;
   const xButton = document.createElement('button');
   xButton.textContent = 'X';
   xButton.addEventListener('click', removeBlockedSite);
@@ -68,7 +70,9 @@ async function showBlockedSites() {
 
   blockedSites.forEach(site => {
     const listItem = document.createElement('li');
-    listItem.textContent = site.userString;
+    listItem.textContent = `${site.userString} - Blocking the ${
+      site.radioOption === 'entire-site' ? 'entire site' : 'specific path'
+    }`;
     const xButton = document.createElement('button');
     xButton.textContent = 'X';
     xButton.addEventListener('click', removeBlockedSite);
@@ -78,11 +82,9 @@ async function showBlockedSites() {
 }
 
 async function removeBlockedSite(e) {
-  const blockedSite = e.target.parentNode.textContent.slice(0, -1);
+  const blockedSite = e.target.parentNode.textContent.split('-')[0].trim();
   const blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
-  blockedSites.forEach(site => {
-    console.log(site.userString, blockedSite);
-  });
+  blockedSites.forEach(site => console.log(site.userString, blockedSite));
   const filterSites = blockedSites.filter(site => site.userString !== blockedSite);
   browser.storage.local.set({ blockedSites: filterSites });
   const list = document.querySelector('#blocked-list');
