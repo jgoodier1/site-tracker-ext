@@ -1,16 +1,16 @@
 # Site Tracker Browser Extension
 
+![home page of the popup](/images/home.png)
+
 ## Table of Contents
 
 - [About the Project](#about-the-project)
 - [Purpose and Goals](#purpose-and-goals)
-- [Spotlight - Blocking](#spotlight-blocking)
+- [Spotlight - Blocking](#spotlight--blocking)
   - [Current Implementation](#current-implementation)
   - [Limitations of This Implementation](#limitations-of-this-implementation)
 - [Lessons Learned](#lessons-learned)
 - [Future Improvements](#future-improvements)
-
-![home page of the popup](/images/home.png)
 
 ## About the Project
 
