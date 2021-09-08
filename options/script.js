@@ -2,21 +2,19 @@ async function blockSite(e) {
   e.preventDefault();
   const input = document.querySelector('#block-site');
   const radioButton = document.querySelector('input[name="block-options"]:checked').value;
-  let blockedRE;
-  if (radioButton === 'entire-site') {
-    blockedRE = new RegExp(input.value, 'i');
-  } else if (radioButton === 'specific-part') {
-    blockedRE = new RegExp(`^[\\w-]+:/*[\\w-.]*${input.value}[/]*$`, 'i');
-  } else return;
+  const blockedRE =
+    radioButton === 'entire-site'
+      ? new RegExp(input.value, 'i')
+      : new RegExp(`^[\\w-]+:/*[\\w-.]*${input.value}[/]*$`, 'i');
 
-  let blockedSites = (await browser.storage.local.get('blockedSites')).blockedSites;
-  if (blockedSites === undefined) blockedSites = [];
+  const blockedSites =
+    (await browser.storage.local.get('blockedSites')).blockedSites ?? [];
   const blockObject = {
     userString: input.value,
     regex: blockedRE,
     radioOption: radioButton
   };
-  // how to do this check??
+  // TODO: needs to be a deep check
   if (blockedSites.includes(blockObject)) return;
   blockedSites.push(blockObject);
   browser.storage.local.set({

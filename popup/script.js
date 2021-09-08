@@ -17,12 +17,12 @@ function topSites() {
 
 function previousDaysList() {
   browser.storage.local.get('previousStats').then(stats => {
-    if (!stats) return;
+    if (stats.previousDayStats === undefined) return;
 
     const sortedResults = Object.keys(stats.previousStats).sort((a, b) => a <= b);
 
     const daysElement = document.getElementById('days');
-    while (daysElement.firstChild) days.removeChild(daysElement.firstChild);
+    while (daysElement.firstChild) daysElement.removeChild(daysElement.firstChild);
 
     for (let i = 0; i < sortedResults.length; i++) {
       const tableRow = document.createElement('tr');
@@ -59,7 +59,7 @@ function addEnterHandler(element, handler) {
     handler(e);
   });
   element.addEventListener('keydown', e => {
-    if ((e.keycode = '13')) {
+    if (e.keycode === '13') {
       e.preventDefault;
       handler(e);
     }
@@ -67,7 +67,7 @@ function addEnterHandler(element, handler) {
 }
 
 function createSitesTable(table, object, array) {
-  for (i = 0; i < array.length; i++) {
+  for (let i = 0; i < array.length; i++) {
     const tableRow = document.createElement('tr');
     const siteName = document.createElement('td');
     const siteLink = document.createElement('a');

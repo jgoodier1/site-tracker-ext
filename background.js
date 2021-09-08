@@ -1,7 +1,5 @@
 let lastHostname;
 
-const tabURLs = [];
-
 browser.storage.local.get('results').then(results => {
   if (results.results) results = results.results;
 
@@ -63,35 +61,24 @@ function addToResults(url, results) {
   browser.storage.local.set({ results: results });
 }
 
-function initiateTab(tabId) {
-  if (tabURLs[tabId]) return;
-  else tabURLs[tabId] = 'about:blank';
-}
-
 function blockSite(details) {
-  initiateTab(details.tabId);
+  browser.storage.local.get(['blockedSites', 'redirectSite']).then(results => {
+    const blockedSites = results.blockedSites;
+    if (blockedSites === undefined) return;
 
-  browser.storage.local.get('blockedSites').then(results => {
-    browser.storage.local.get('redirectSite').then(redirectResults => {
-      const blockedSites = results.blockedSites;
-      if (blockedSites === undefined) return;
+    function redirect() {
+      let redirectSite = results.redirectSite;
 
-      tabURLs[details.tabId] = details.url;
-
-      function redirect() {
-        let redirectSite = redirectResults.redirectSite;
-
-        const defaultUrl = browser.runtime.getURL('blocked/index.html');
-        if (redirectSite === undefined) redirectSite = defaultUrl;
-        else if (redirectSite.slice(0, 4) !== 'http' && redirectSite !== 'about:blank') {
-          redirectSite = `https://www.${redirectSite}/`;
-        }
-        browser.tabs.update(details.tabId, { url: redirectSite, loadReplace: true });
+      const defaultUrl = browser.runtime.getURL('blocked/index.html');
+      if (redirectSite === undefined) redirectSite = defaultUrl;
+      else if (redirectSite.slice(0, 4) !== 'http' && redirectSite !== 'about:blank') {
+        redirectSite = `https://www.${redirectSite}/`;
       }
-      blockedSites.forEach(site => {
-        const found = tabURLs[details.tabId].match(site.regex);
-        if (found !== null) redirect();
-      });
+      browser.tabs.update(details.tabId, { url: redirectSite, loadReplace: true });
+    }
+    blockedSites.forEach(site => {
+      const found = details.url.match(site.regex);
+      if (found !== null) redirect();
     });
   });
 }

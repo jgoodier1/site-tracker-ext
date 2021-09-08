@@ -2,7 +2,7 @@
   "description": "Keeps track of the website you visit.",
   "manifest_version": 2,
   "name": "Site Tracker",
-  "version": "1.1",
+  "version": "1.1.1",
   "icons": {
     "48": "icons/icon.svg"
   },
